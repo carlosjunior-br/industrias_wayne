@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação do Sistema - Indústrias Wayne</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="./front-end/images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Indústrias Wayne</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#introducao">Introdução</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#requisitos">Requisitos do Sistema</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#instalacao">Instalação</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#funcionalidades">Funcionalidades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#registro">Registro de Acesso</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <section id="introducao">
+        <h2>Introdução</h2>
+        <p>Bem-vindo à documentação do sistema de gerenciamento de segurança das Indústrias Wayne. Este sistema foi desenvolvido para facilitar a gestão de recursos e usuários, garantindo a segurança e eficiência nas operações da empresa.</p>
+    </section>
+
+    <section id="requisitos">
+        <h2>Requisitos do Sistema</h2>
+        <ul>
+            <li>Python 3.7 ou superior</li>
+            <li>FastAPI</li>
+            <li>Banco de dados (SQLite)</li>
+            <li>Node.js e npm (para o frontend)</li>
+        </ul>
+    </section>
+
+    <section id="instalacao">
+        <h2>Instalação</h2>
+        <p>Para iniciar o sistema em modo local, siga as etapas abaixo:</p>
+        <ol>
+            <li>Navegue até a pasta do projeto.</li>
+            <li>Crie um ambiente virtual em Python e instale as dependências necessárias executando o arquivo: <code>setup.bat</code>.</li>
+            <li>Inicie o aplicativo com o comando: <code>python -m app.main</code> ou executando o arquivo <code>iniciar aplicação.bat</code>.</li>
+        </ol>
+        <p>No primeiro acesso, você deverá criar um usuário Administrador. Siga as instruções apresentadas na interface para concluir a criação.</p>
+        <p>A estrutura do projeto é composta pelas seguintes pastas:</p>
+        <ul>
+            <li><strong>app:</strong> Código do backend.</li>
+            <li><strong>front-end:</strong> Código do frontend.</li>
+        </ul>
+        <h4>Alimentação de Dados Iniciais</h4>
+        <p>Para facilitar os testes e a utilização do sistema, um script Python foi desenvolvido para efetuar a alimentação automática da base de dados com dados pré-definidos. Isso permite que a aplicação seja testada com um conjunto de dados já existente, sem a necessidade de criar cada usuário e recurso manualmente.</p>
+        <p>A alimentação de dados iniciais é opcional e não uma exigência para a instalação ou funcionamento do sistema.</p>
+        <p>Para executar o script de alimentação de dados, siga as etapas abaixo:</p>
+        <ol>
+            <li>Certifique-se de que o servidor do banco de dados (backend) e o frontend não estejam em execução.</li>
+            <li>Navegue até a raiz do projeto onde o arquivo <code>cadastros_prontos.py</code> está localizado.</li>
+            <li>Execute o script com o seguinte comando no terminal:</li>
+            <code>python cadastros_prontos.py</code>
+            <li>Aguarde a execução do script. O terminal exibirá mensagens indicando o sucesso ou falha de cada cadastro.</li>
+            <li>Após a conclusão, você terá usuários, recursos e registros de acesso pré-cadastrados no sistema, prontos para serem utilizados.</li>
+            <h5>Usuários Cadastrados:</h5>
+            <ul>
+                <li>
+                    <strong>Batman</strong><br>
+                    Papel: Administrador
+                </li>
+                <li>
+                    <strong>Alfred</strong><br>
+                    Papel: Administrador
+                </li>
+                <li>
+                    <strong>Lucius</strong><br>
+                    Papel: Administrador
+                </li>
+                <li>
+                    <strong>Barbara_Gordon</strong><br>
+                    Papel: Gerente
+                </li>
+                <li>
+                    <strong>Robin</strong><br>
+                    Papel: Gerente
+                </li>
+                <li>
+                    <strong>Jason_Todd</strong><br>
+                    Papel: Gerente
+                </li>
+                <li>
+                    <strong>Selina_Kyle</strong><br>
+                    Papel: Funcionário
+                </li>
+                <li>
+                    <strong>Tim_Drake</strong><br>
+                    Papel: Funcionário
+                </li>
+                <li>
+                    <strong>Leslie_Thompkins</strong><br>
+                    Papel: Funcionário
+                </li>
+                <li>
+                    <strong>Coringa</strong><br>
+                    Papel: Funcionário
+                </li>
+            </ul>
+            <p>Todos os usuários cadastrados possuem a mesma senha padrão: <strong><code>12345678</code></strong>.</p>            
+            <p><strong>Observação:</strong> Ao fazer login, os nomes de usuários devem ser usados exatamente como estão descritos, considerando as letras maiúsculas, minúsculas e o underline (<code>_</code>).</p>
+        </ol>
+        <p>Esse procedimento é especialmente útil para desenvolvedores e testadores que desejam validar a funcionalidade do sistema sem a necessidade de inserir dados manualmente. Você poderá acessar a aplicação e explorar as funcionalidades disponíveis com os dados já carregados.</p>
+    </section>
+
+    <section id="funcionalidades">
+        <h2>Funcionalidades e Acesso ao Sistema</h2>
+        <p>O sistema oferece uma variedade de funcionalidades que são acessadas de acordo com o papel do usuário, garantindo que cada um tenha acesso às informações e ferramentas necessárias para suas responsabilidades. As funcionalidades incluem:</p>
+        <ul>
+            <li>
+                <strong>Gestão de Recursos:</strong> 
+                <p>Interface para gerenciar recursos internos, como inventário de equipamentos, veículos e dispositivos de segurança. Este módulo é acessível apenas para usuários com papéis de Gerente e Administrador.</p>
+            </li>
+            <li>
+                <strong>Gestão de Usuários:</strong> 
+                <p>Interface para gerenciar os usuários do sistema, permitindo a criação e modificação de contas. Este recurso está disponível exclusivamente para Administradores.</p>
+            </li>
+            <li>
+                <strong>Dashboard de Visualização:</strong> 
+                <p>Painel de controle que exibe dados relevantes sobre segurança, recursos e registros de acesso. Os dashboards possuem gráficos para demonstrar melhor os dados, proporcionando uma visualização mais clara e intuitiva. Este painel é acessível a todos os papéis de usuários.</p>
+            </li>
+        </ul>
+        
+        <h4>Níveis de Acesso</h4>
+        <p>Os níveis de acesso são definidos da seguinte forma:</p>
+        <ul>
+            <li>
+                <strong>Funcionário:</strong> 
+                <p>Os funcionários têm acesso ao Dashboard, onde podem visualizar as informações relacionadas à empresa. O Dashboard é intuitivo e fornece uma visão geral dos recursos, usuários e acessos.</p>
+            </li>
+            <li>
+                <strong>Gerente:</strong> 
+                <p>Os gerentes possuem acesso ao Dashboard e à Gestão de Recursos, permitindo que administrem o inventário e equipamentos, garantindo que todos os recursos estejam disponíveis para as operações da empresa.</p>
+            </li>
+            <li>
+                <strong>Administrador:</strong> 
+                <p>Os administradores têm acesso total ao sistema, incluindo o Dashboard, Gestão de Recursos e Gestão de Usuários. Isso permite que gerenciem todos os aspectos do sistema, desde a criação de usuários até a supervisão completa dos recursos e segurança, monitorando o acesso e realizando ajustes conforme necessário.</p>
+            </li>
+        </ul>
+        <p>Essas distinções de acesso são gerenciadas dinamicamente pelo sistema, garantindo que a interface se adapte automaticamente ao papel do usuário logado, promovendo uma experiência personalizada e segura.</p>
+    </section>
+
+    <section id="registro">
+        <h2>Registro de Acesso</h2>
+        <p>Todos os logins são registrados no sistema, permitindo que seja acompanhado quem acessou a plataforma e quando. Esse recurso é essencial para a segurança da informação e pode ser visualizado diretamente no Dashboard. Somente os administradores tem acesso à exclusão dos registros.</p>
+        <p>O gráfico de registros de acesso é exibido em linhas se forem até 31 dias de dados. Caso haja mais de 31 dias de dados, as informações são apresentadas em formato de barras por mês/ano, facilitando a visualização e análise dos registros.</p>
+    </section>
+</div>
+
+<footer class="bg-light text-center text-lg-start mt-5">
+    <div class="text-center p-3">
+        &copy; 2024 Indústrias Wayne. Todos os direitos reservados.
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+</body>
+</html>

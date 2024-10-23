@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indústrias Wayne</title>
+    <link rel="stylesheet" href="styles.css?v=1.1.1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid entrada">    
+        <div class="row" id="home">
+            <nav>
+                <ul id="navbar">
+                    <!-- As entradas da barra de navegação serão adicionadas dinamicamente -->
+                </ul>
+            </nav>
+            <div class="col-md-9 text-center fundo-fosco">
+                <h1>Bem vindo ao sistema das Indústrias Wayne!</h1>
+                <h4 id="titulo-de-acordo-com-login">
+                    <!-- Este título será adicionado dinamicamente -->
+                </h4>
+            </div>
+        </div>
+    </div>
+    
+    <main class="container-fluid main">
+        
+        <section id="login">
+            <h2>Login</h2>
+            <form id="form-login">
+                <label for="nome-usuario">Nome de Usuário:</label>
+                <input type="text" id="nome-usuario" name="nome-usuario" required>
+                <label for="senha">Senha:</label>
+                <div class="linha-senha-icone">
+                    <input type="password" id="senha" name="senha" required>
+                    <button class="btn btn-outline-secondary togglePassword" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+        </section>
+
+        <section id="cadastro-admin">
+            <h2>Cadastro de Administrador</h2>
+            <form id="form-cadastro-admin">
+                <label for="nome-usuario-admin">Nome de Usuário:</label>
+                <input type="text" id="nome-usuario-admin" name="nome-usuario-admin" required>
+                <label for="senha-admin">Senha:</label>
+                <div class="linha-senha-icone">
+                    <input type="password" id="senha-admin" name="senha-admin" required>
+                    <button class="btn btn-outline-secondary togglePassword" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit">Cadastrar Administrador</button>
+            </form>
+        </section>
+
+        <section id="gestao-usuarios">
+            <h2>Gestão de Usuários</h2>
+            <form id="form-usuario">
+                <label for="nome-usuario-novo">Nome de Usuário:</label>
+                <input type="text" id="nome-usuario-novo" name="nome-usuario-novo" required>
+                <label for="senha-nova">Senha:</label>
+                <div class="linha-senha-icone">
+                    <input type="password" id="senha-nova" name="senha-nova" required>
+                    <button class="btn btn-outline-secondary togglePassword" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <label for="papel">Papel:</label>
+                <select class="select" id="papel" name="papel">
+                    <option value="funcionario">Funcionário</option>
+                    <option value="gerente">Gerente</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+                <div class="button-group d-flex justify-content-around">
+                    <button type="submit">Adicionar Usuário</button>
+                    <button type="reset">Limpar</button>
+                </div>
+            </form>
+            <div>
+                <h3>Lista de Usuários</h3>
+                <div class="row" id="lista-usuarios">
+                    <!-- Lista de usuários será inserida aqui via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section id="gestao-recursos">
+            <h2>Gestão de Recursos</h2>
+            <form id="form-recurso">
+                <label for="nome-recurso">Nome do Recurso:</label>
+                <input type="text" id="nome-recurso" name="nome-recurso" required>
+
+                <label for="descricao-recurso">Descrição:</label>
+                <input type="text" id="descricao-recurso" name="descricao-recurso">
+
+                <label for="tipo-recurso">Tipo:</label>
+                <select class="select" id="tipo-recurso" name="tipo-recurso">
+                    <option value="equipamento">Equipamento</option>
+                    <option value="veiculo">Veículo</option>
+                    <option value="dispositivo_seguranca">Dispositivo de Segurança</option>
+                </select>
+
+                <div class="button-group d-flex justify-content-around">
+                    <button type="submit">Adicionar Recurso</button>
+                    <button type="reset">Limpar</button>
+                </div>
+            </form>
+            <div>
+                <h3>Lista de Recursos</h3>
+                <div class="row" id="lista-recursos">
+                    <!-- Lista de recursos será inserida aqui via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard">
+            <h2>Dashboard</h2>
+            <div class="dashboard-div">
+                <h3>Registros de Acesso</h3>
+                <div class="row" id="visualizacao-registros">
+                    <!-- Registros de acesso serão inseridos aqui via JavaScript -->
+                </div>
+                <div class="col botao-e-texto" id="botao-e-texto-admin">
+                    <button type="button" class="btn btn-danger btn-md m-1" id="btn-excluir-acessos">Excluir todos os acessos</button>
+                    <span>Permitido somente para Administradores</span>
+                </div>
+                <h3>Gráfico de Registros de Acessos</h3>
+                <div class="row">
+                    <div class="col">
+                        <label for="usuarioFiltro">Filtrar por Usuário:</label>
+                        <select id="usuarioFiltro" class="form-select">
+                            <option value="todos">Todos</option>
+                            <!-- Os usuários serão adicionados dinamicamente -->
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="papelFiltro">Filtrar por Papel:</label>
+                        <select id="papelFiltro" class="form-select">
+                            <option value="todos">Todos</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="funcionario">Funcionário</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="dataInicial">Data Inicial:</label>
+                        <input type="date" id="dataInicial" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="dataFinal">Data Final:</label>
+                        <input type="date" id="dataFinal" class="form-control">
+                    </div>
+                </div>
+                <button id="filtrar" class="btn btn-primary mt-3">Filtrar</button>
+                <button id="resetar-filtros" class="btn btn-secondary mt-3">Remover Filtros</button>
+                <div id="graficoAcessos" class="mt-4" style="width: 100%; height: 400px;"></div>
+            </div>
+            
+            <div class="dashboard-div">
+                <h3>Usuários Cadastrados</h3>
+                <div class="row" id="visualizacao-usuarios">
+                    <!-- Usuários cadastrados serão inseridos aqui via JavaScript -->
+                </div>
+                <h3>Gráfico de Distribuição de Usuários por Papel</h3>
+                <div id="graficoUsuariosPorPapel" style="width: 100%; height: 400px;"></div>
+            </div>
+            
+            <div class="dashboard-div">
+                <h3>Recursos Cadastrados</h3>
+                <div class="row" id="visualizacao-recursos">
+                    <!-- Recursos cadastrados serão inseridos aqui via JavaScript -->
+                </div>
+                <h3>Gráfico de Distribuição de Recursos por Tipo</h3>
+                <div id="graficoRecursosPorTipo" style="width: 100%; height: 400px;"></div>
+            </div>
+        </section>
+    
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Industrias Wayne. Todos os direitos reservados.</p>
+    </footer>
+    
+    <!-- Modal para alertas -->
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgba(26, 26, 26, 0.9);">
+                    <h5 class="modal-title" id="alertModalLabel" style="color: #fff;">Indústrias Wayne</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body texto-justificado" id="modalMessage" style="background-color: #fff; color: rgba(26, 26, 26, 0.9);">
+                     Mensagem será gerada dinamicamente.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" id="closeButton" style="background-color: #FFD700; color: #000;">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgba(26, 26, 26, 0.9);">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel" style="color: #fff;">Confirmação de Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #fff; color: rgba(26, 26, 26, 0.9);">
+                    Você deseja confirmar a exclusão?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #FFD700; color: #000;">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="botao-confirmar-exclusao">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Edição de Usuários -->
+    <div class="modal fade" id="editUsuarioModal" tabindex="-1" aria-labelledby="editUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgba(26, 26, 26, 0.9);">
+                    <h5 class="modal-title" id="editUsuarioModalLabel" style="color: #fff;">Edição de Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #dadada; color: rgba(26, 26, 26, 0.9);">
+                    <form id="form-editar-usuario">
+                        <label for="nome-editado-usuario">Nome de Usuário:</label>
+                        <input type="text" id="nome-editado-usuario" name="nome-editado-usuario" required>
+                        <div class="button-group d-flex justify-content-around">
+                            <button type="submit">Salvar</button>
+                            <button type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #FFD700; color: #000;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Edição de Recursos -->
+    <div class="modal fade" id="editRecursoModal" tabindex="-1" aria-labelledby="editRecursoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgba(26, 26, 26, 0.9);">
+                    <h5 class="modal-title" id="editRecursoModalLabel" style="color: #fff;">Edição de Recurso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #dadada; color: rgba(26, 26, 26, 0.9);">
+                    <form id="form-editar-recurso">
+                        <label for="nome-editado-recurso">Nome do Recurso:</label>
+                        <input type="text" id="nome-editado-recurso" name="nome-editado-recurso" required>        
+                        <label for="descricao-editada-recurso">Descrição:</label>
+                        <input type="text" id="descricao-editada-recurso" name="descricao-editada-recurso">
+                        <label for="tipo-editado-recurso">Tipo:</label>
+                        <select class="select" id="tipo-editado-recurso" name="tipo-editado-recurso">
+                            <option value="equipamento">Equipamento</option>
+                            <option value="veiculo">Veículo</option>
+                            <option value="dispositivo_seguranca">Dispositivo de Segurança</option>
+                        </select>
+                        <div class="button-group d-flex justify-content-around">
+                            <button type="submit">Salvar</button>
+                            <button type="reset">Limpar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #FFD700; color: #000;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js?v=1.1.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</body>
+
+</html>
