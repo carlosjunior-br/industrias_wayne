@@ -17,15 +17,19 @@ def cadastrar_usuarios(db):
         {"nome_usuario": "Leslie_Thompkins", "senha": "12345678", "papel": "funcionario"},
         {"nome_usuario": "Coringa", "senha": "12345678", "papel": "funcionario"},
     ]
-
     for usuario in usuarios:
-        novo_usuario = modelos.Usuario(
-            nome_usuario=usuario["nome_usuario"],
-            senha=usuario["senha"],
-            papel=usuario["papel"]
-        )
-        db.add(novo_usuario)
-        print(f"Usuário '{usuario['nome_usuario']}' cadastrado com sucesso!")
+        # Verificar se o usuário já existe
+        existe_usuario = db.query(modelos.Usuario).filter_by(nome_usuario=usuario["nome_usuario"]).first()
+        if not existe_usuario:
+            novo_usuario = modelos.Usuario(
+                nome_usuario=usuario["nome_usuario"],
+                senha=usuario["senha"],
+                papel=usuario["papel"]
+            )
+            db.add(novo_usuario)
+            print(f"Usuário '{usuario['nome_usuario']}' cadastrado com sucesso!")
+        else:
+            print(f"Usuário '{usuario['nome_usuario']}' já existe. Cadastro pulado.")
 
 # Função para cadastrar recursos no banco de dados
 def cadastrar_recursos(db):
@@ -53,36 +57,41 @@ def cadastrar_recursos(db):
         {"nome": "Controle de Acesso Biométrico", "tipo": "dispositivo_seguranca", "descricao": "Sistemas que utilizam impressão digital ou reconhecimento facial."},
         {"nome": "Dispositivos de Comunicações Seguras", "tipo": "dispositivo_seguranca", "descricao": "Equipamentos para comunicação entre a equipe de segurança."},
     ]
-
     for recurso in recursos:
-        novo_recurso = modelos.Recurso(
-            nome=recurso["nome"],
-            tipo=recurso["tipo"],
-            descricao=recurso["descricao"]
-        )
-        db.add(novo_recurso)
-        print(f"Recurso '{recurso['nome']}' cadastrado com sucesso!")
+        # Verificar se o recurso já existe
+        existe_recurso = db.query(modelos.Recurso).filter_by(nome=recurso["nome"]).first()
+        if not existe_recurso:
+            novo_recurso = modelos.Recurso(
+                nome=recurso["nome"],
+                tipo=recurso["tipo"],
+                descricao=recurso["descricao"]
+            )
+            db.add(novo_recurso)
+            print(f"Recurso '{recurso['nome']}' cadastrado com sucesso!")
+        else:
+            print(f"Recurso '{recurso['nome']}' já existe. Cadastro pulado.")
 
 # Função para cadastrar registros de acesso no banco de dados
 def cadastrar_acessos(db):
     usuarios_ids = range(1, 11)  # IDs de usuários de 1 a 10
     registros = []
-
     # Calcular a data de um ano atrás e um dia antes da data atual
     data_atual = datetime.now()
     data_futura = data_atual - timedelta(days=1)  # Um dia antes da data atual
     data_passada = data_atual - timedelta(days=365)  # Um ano atrás
-
     for usuario_id in usuarios_ids:
-        for _ in range(20):  # Adicionar 20 registros para cada usuário
-            # Gerar uma data aleatória no intervalo especificado
-            data_aleatoria = data_passada + (data_futura - data_passada) * random.random()
-
-            # Criar o registro de acesso
-            novo_registro = modelos.RegistroAcesso(usuario_id=usuario_id, data_hora_acesso=data_aleatoria)
-            registros.append(novo_registro)
-            print(f"Registro de acesso para o usuário ID '{usuario_id}' cadastrado com sucesso!")
-
+        # Verificar se o usuário existe antes de cadastrar os registros de acesso
+        usuario_existe = db.query(modelos.Usuario).filter_by(id=usuario_id).first()
+        if usuario_existe:
+            for _ in range(20):  # Adicionar 20 registros para cada usuário
+                # Gerar uma data aleatória no intervalo especificado
+                data_aleatoria = data_passada + (data_futura - data_passada) * random.random()
+                # Criar o registro de acesso
+                novo_registro = modelos.RegistroAcesso(usuario_id=usuario_id, data_hora_acesso=data_aleatoria)
+                registros.append(novo_registro)
+                print(f"Registro de acesso para o usuário ID '{usuario_id}' cadastrado com sucesso!")
+        else:
+            print(f"Usuário ID '{usuario_id}' não existe. Registro de acesso pulado.")
     # Adicionar todos os registros à sessão de banco de dados
     db.add_all(registros)
 
@@ -92,22 +101,16 @@ if __name__ == "__main__":
     try:
         # Criar as tabelas no banco de dados se não existirem
         Base.metadata.create_all(db.bind)
-
         print("Iniciando o cadastro de usuários...")
         cadastrar_usuarios(db)
-
         print("\nIniciando o cadastro de recursos...")
         cadastrar_recursos(db)
-
         print("\nIniciando o cadastro de registros de acesso...")
         cadastrar_acessos(db)
-
         db.commit()
         print("\nTodos os cadastros realizados com sucesso!")
-
     except Exception as e:
         db.rollback()
         print(f"Ocorreu um erro: {e}")
-
     finally:
         db.close()
