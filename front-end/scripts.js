@@ -410,7 +410,7 @@ function initialize() {
             const nomeUsuarioTrim = nomeEditadoUsuario.value.trim()
             const nomeUsuarioJaExiste = await verificarNomeUsuario(nomeUsuarioTrim)
             if (nomeUsuarioJaExiste) {
-                throw new Error('Não foi possível cadastrar usuário! O nome informado já existe.')
+                throw new Error('Não foi possível editar usuário! O nome informado já existe.')
             }
             const usuarioAtualizado = {
                 nome_usuario: nomeEditadoUsuario.value
@@ -640,9 +640,9 @@ function initialize() {
             }
 			// Verificar se o nome do recurso já existe
             const nomeRecursoTrim = nomeEditadoRecurso.value.trim()
-            const nomeRecursoJaExiste = await verificarNomeUsuario(nomeRecursoTrim)
+            const nomeRecursoJaExiste = await verificarNomeRecurso(nomeRecursoTrim)
             if (nomeRecursoJaExiste) {
-                throw new Error('Não foi possível cadastrar recurso! O nome informado já existe.')
+                throw new Error('Não foi possível editar recurso! O nome informado já existe.')
             }
             const recursoAtualizado = {
                 nome: nomeEditadoRecurso.value,
@@ -753,7 +753,21 @@ function initialize() {
                 linha.appendChild(colunaPapel)
 
                 const colunaDataHora = document.createElement('td')
-                colunaDataHora.innerText = new Date(registro.data_hora_acesso).toLocaleString()
+                const dataHoraISO = new Date(registro.data_hora_acesso)
+                const dataHoraFormatada = dataHoraISO.toLocaleString('pt-BR', {
+                    timeZone: 'America/Sao_Paulo',
+                    hour12: false,
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).replace(',', '')
+                const [data, hora] = dataHoraFormatada.split(' ')
+                const [horas, minutos, segundos] = hora.split(':')
+                colunaDataHora.innerText = `${data} - ${horas}h${minutos}min:${segundos}seg`
+                colunaDataHora.setAttribute('data-order', dataHoraISO)
                 linha.appendChild(colunaDataHora)
     
                 tbody.appendChild(linha)
@@ -812,8 +826,8 @@ function initialize() {
             // Filtrando os dados com base nos parâmetros
             let registrosFiltrados = acessos.filter(registro => {
                 const dataRegistro = new Date(registro.data_hora_acesso)
-                const dataInicialValida = dataInicial ? new Date(dataInicial) : null
-                const dataFinalValida = dataFinal ? new Date(dataFinal) : null
+                const dataInicialValida = dataInicial ? new Date(dataInicial + 'T00:00:00') : null
+                const dataFinalValida = dataFinal ? new Date(dataFinal + 'T23:59:59') : null
                 const usuarioValido = filtroUsuario === 'todos' || registro.nome_usuario === filtroUsuario
                 const papelValido = filtroPapel === 'todos' || registro.papel === filtroPapel
                 return (
@@ -823,9 +837,9 @@ function initialize() {
                     (!dataFinalValida || dataRegistro <= dataFinalValida)
                 )
             })    
-            const limiteRegistros = 31 // Limite de dias para decidir entre diário e mensal
-            const totalAcessos = registrosFiltrados.length // Total geral de acessos
-            if (registrosFiltrados.length > limiteRegistros) {
+            const tipoGrafico = document.getElementById('tipoGrafico').value; // Obter o valor do seletor
+            const totalAcessos = registrosFiltrados.length; // Total geral de acessos
+            if (tipoGrafico === 'mensal') {
                 // Agrupar por mês
                 const registrosMensais = {}
                 registrosFiltrados.forEach(registro => {
@@ -896,11 +910,16 @@ function initialize() {
             hovermode: 'closest'
         }
         if (tipo === 'daily') {
+            const maxUsuariosExibir = 5 // Limite de usuários a exibir devido a limitação da tooltip da biblioteca Plotly
             trace.text = dates.map((date, index) => {
                 const dataFormatada = date.split('/').reverse().join('-') // Converter para YYYY-MM-DD
                 const usuarios = usuariosDiarios[dataFormatada] || []
-                const usuariosText = usuarios.map(usuario => `${usuario.nome} (${formatarPapelUsuario(usuario.papel)})`).join(', ')
-                return `Acessos: ${counts[index]}<br>Usuários: ${usuariosText}`
+                const usuariosUnicos = [...new Set(usuarios.map(usuario => `${usuario.nome} (${formatarPapelUsuario(usuario.papel)})`))] // Obter usuários únicos
+                const contagemUsuarios = usuariosUnicos.length
+                const usuariosText = contagemUsuarios > maxUsuariosExibir 
+                    ? `${contagemUsuarios} usuário(s) único(s) (exibindo apenas ${maxUsuariosExibir})<br>${usuariosUnicos.slice(0, maxUsuariosExibir).join('<br>')}<br>... e mais ${contagemUsuarios - maxUsuariosExibir} usuário(s)`
+                    : `${contagemUsuarios} usuário(s) único(s): ${usuariosUnicos.join('<br>')}`
+                return `Acessos: ${counts[index]}<br>${usuariosText}`; // A linha original permanece a mesma
             })
         }
         Plotly.newPlot('graficoAcessos', [trace], layout).then(() => {
@@ -1338,7 +1357,7 @@ function initialize() {
             const dataFinal = document.getElementById('dataFinal').value
             carregarDadosParaGraficoRegistrosDeAcesso(usuarioFiltro, papelFiltro, dataInicial, dataFinal)
         })
-        // Remover os filtros
+        // Remover os filtros do gráfico de registros de acessos
         document.getElementById('resetar-filtros').addEventListener('click', () => {
             document.getElementById('usuarioFiltro').value = 'todos'
             document.getElementById('papelFiltro').value = 'todos'
@@ -1346,7 +1365,15 @@ function initialize() {
             document.getElementById('dataFinal').value = ''
             carregarDadosParaGraficoRegistrosDeAcesso()
         })
-        
+        // Mudar o tipo de gráfico
+        document.getElementById('tipoGrafico').addEventListener('change', function() {
+            const filtroUsuario = document.getElementById('usuarioFiltro').value
+            const filtroPapel = document.getElementById('papelFiltro').value
+            const dataInicial = document.getElementById('dataInicial').value
+            const dataFinal = document.getElementById('dataFinal').value
+            carregarDadosParaGraficoRegistrosDeAcesso(filtroUsuario, filtroPapel, dataInicial, dataFinal)
+        })
+
         formLogin.addEventListener('submit', fazer_login)
         formCadastroAdmin.addEventListener('submit', cadastrarAdministrador)
         formUsuario.addEventListener('submit', cadastrarUsuario)

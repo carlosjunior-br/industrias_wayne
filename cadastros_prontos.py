@@ -1,4 +1,5 @@
 import random
+from sqlalchemy import func
 from datetime import datetime, timedelta
 from app.banco_dados import obter_db, Base
 from app import modelos
@@ -19,7 +20,7 @@ def cadastrar_usuarios(db):
     ]
     for usuario in usuarios:
         # Verificar se o usuário já existe
-        existe_usuario = db.query(modelos.Usuario).filter_by(nome_usuario=usuario["nome_usuario"]).first()
+        existe_usuario = db.query(modelos.Usuario).filter(func.upper(modelos.Usuario.nome_usuario) == func.upper(usuario["nome_usuario"])).first()
         if not existe_usuario:
             novo_usuario = modelos.Usuario(
                 nome_usuario=usuario["nome_usuario"],
@@ -30,6 +31,7 @@ def cadastrar_usuarios(db):
             print(f"Usuário '{usuario['nome_usuario']}' cadastrado com sucesso!")
         else:
             print(f"Usuário '{usuario['nome_usuario']}' já existe. Cadastro pulado.")
+    db.commit()  # Commit após cadastrar usuários
 
 # Função para cadastrar recursos no banco de dados
 def cadastrar_recursos(db):
@@ -59,7 +61,7 @@ def cadastrar_recursos(db):
     ]
     for recurso in recursos:
         # Verificar se o recurso já existe
-        existe_recurso = db.query(modelos.Recurso).filter_by(nome=recurso["nome"]).first()
+        existe_recurso = db.query(modelos.Recurso).filter(func.upper(modelos.Recurso.nome) == func.upper(recurso["nome"])).first()
         if not existe_recurso:
             novo_recurso = modelos.Recurso(
                 nome=recurso["nome"],
@@ -70,6 +72,7 @@ def cadastrar_recursos(db):
             print(f"Recurso '{recurso['nome']}' cadastrado com sucesso!")
         else:
             print(f"Recurso '{recurso['nome']}' já existe. Cadastro pulado.")
+    db.commit()  # Commit após cadastrar recursos
 
 # Função para cadastrar registros de acesso no banco de dados
 def cadastrar_acessos(db):
@@ -94,6 +97,7 @@ def cadastrar_acessos(db):
             print(f"Usuário ID '{usuario_id}' não existe. Registro de acesso pulado.")
     # Adicionar todos os registros à sessão de banco de dados
     db.add_all(registros)
+    db.commit()  # Commit após cadastrar acessos
 
 # Executar o script
 if __name__ == "__main__":
@@ -107,7 +111,6 @@ if __name__ == "__main__":
         cadastrar_recursos(db)
         print("\nIniciando o cadastro de registros de acesso...")
         cadastrar_acessos(db)
-        db.commit()
         print("\nTodos os cadastros realizados com sucesso!")
     except Exception as e:
         db.rollback()
