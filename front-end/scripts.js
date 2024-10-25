@@ -1074,7 +1074,8 @@ function initialize() {
                     columns: [
                         { width: '50%' },
                         { width: '50%' }
-                    ]
+                    ],
+                    order: [],
                 })
             })
             carregarDadosParaGraficoUsuariosPorPapel()
@@ -1199,7 +1200,8 @@ function initialize() {
                         { width: '30%' },
                         { width: '50%' },
                         { width: '20%' }
-                    ]
+                    ],
+                    order: [],
                 })
             })
         } catch (error) {
