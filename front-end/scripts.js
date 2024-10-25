@@ -414,6 +414,8 @@ function initialize() {
             listaUsuarios.style.display = 'flex'
             listaUsuarios.style.flexDirection = 'column'
             listaUsuarios.style.alignItems = 'center'
+            // Colocando em ordem alfabética
+            listaDeUsuarios.sort((a, b) => a.nome_usuario.localeCompare(b.nome_usuario))
             listaDeUsuarios.forEach(usuario => {
                 const row = document.createElement('div')
                 row.classList.add('row', 'align-items-center', 'mb-3', 'w-100', 'usuario-container')
@@ -479,7 +481,8 @@ function initialize() {
             optionTodosGrafico.textContent = 'Todos'
             optionTodosGrafico.selected = true // Definir como selecionada
             usuarioFiltro.appendChild(optionTodosGrafico)
-            // Criar opções a partir da lista de usuários
+            // Criar opções a partir da lista de usuários em ordem alfabética
+            usuarios.sort((a, b) => a.nome_usuario.localeCompare(b.nome_usuario))
             usuarios.forEach(usuario => {
                 const option = document.createElement('option')
                 option.value = usuario.nome_usuario
@@ -573,75 +576,6 @@ function initialize() {
         }
     }
 
-    // Função para carregar lista de recursos
-    async function carregarRecursos() {
-        try {
-            const response = await fetch(`${urlApi}/recursos/`)
-            const recursos = await response.json()
-            carregarRecursosNoHtml(recursos)
-        } catch (error) {
-            console.error('Ocorreu um erro ao carregar lista de recursos.')
-        }
-    }
-
-    // Função para listar recursos no html
-    function carregarRecursosNoHtml(listaDeRecursos) {
-        try {
-            listaRecursos.innerHTML = ''
-            listaRecursos.classList.add('card-container')
-            listaDeRecursos.forEach(recurso => {
-                const col = document.createElement('div')
-                col.classList.add('col-md-4', 'mb-4')
-        
-                const card = document.createElement('div')
-                card.classList.add('card', 'card-recurso')
-           
-                const cardBody = document.createElement('div')
-                cardBody.classList.add('card-body')
-        
-                const cardTitle = document.createElement('h5')
-                cardTitle.classList.add('card-title')
-                cardTitle.innerText = recurso.nome
-        
-                const cardText = document.createElement('p')
-                cardText.classList.add('card-text')
-                cardText.innerText = recurso.descricao
-
-                const cardText2 = document.createElement('p')
-                cardText2.classList.add('card-text')
-                cardText2.innerHTML = `<strong>Tipo:</strong> ${formatarTipoRecurso(recurso.tipo)}`
-        
-                const buttonGroup = document.createElement('div')
-                buttonGroup.classList.add('button-group', 'card-footer', 'd-flex', 'justify-content-around')
-                
-                const excluirButton = document.createElement('button')
-                excluirButton.classList.add('btn', 'btn-danger', 'btn-sm', 'm-1')
-                excluirButton.innerText = 'Excluir'
-                excluirButton.addEventListener('click', function() {
-                    confirmarExclusaoRecurso(recurso.id)
-                })
-                const editarButton = document.createElement('button')
-                editarButton.classList.add('btn', 'btn-primary', 'btn-sm', 'm-1')
-                editarButton.innerText = 'Editar'
-                editarButton.addEventListener('click', function() {
-                    editarRecursoNoHtml(recurso.id)
-                })
-                buttonGroup.appendChild(excluirButton)
-                buttonGroup.appendChild(editarButton)
-    
-                cardBody.appendChild(cardTitle)
-                cardBody.appendChild(cardText)
-                cardBody.appendChild(cardText2)
-                card.appendChild(cardBody)
-                card.appendChild(buttonGroup)
-                col.appendChild(card)
-                listaRecursos.appendChild(col)
-            })
-        } catch (error) {
-            console.error('Ocorreu um erro ao renderizar recursos.')
-        }
-    }
-
     // Função para editar recurso
     async function editarRecursoNoHtml(id) {
         try {
@@ -707,6 +641,77 @@ function initialize() {
             alerta(error.message || 'Ocorreu um erro ao tentar editar o recurso. Tente novamente.', function() {
                 nomeEditadoRecurso.focus()
             })
+        }
+    }
+
+    // Função para carregar lista de recursos
+    async function carregarRecursos() {
+        try {
+            const response = await fetch(`${urlApi}/recursos/`)
+            const recursos = await response.json()
+            carregarRecursosNoHtml(recursos)
+        } catch (error) {
+            console.error('Ocorreu um erro ao carregar lista de recursos.')
+        }
+    }
+
+    // Função para listar recursos no html
+    function carregarRecursosNoHtml(listaDeRecursos) {
+        try {
+            listaRecursos.innerHTML = ''
+            listaRecursos.classList.add('card-container')
+            // Colocando em ordem alfabética
+            listaDeRecursos.sort((a, b) => a.nome.localeCompare(b.nome))
+            listaDeRecursos.forEach(recurso => {
+                const col = document.createElement('div')
+                col.classList.add('col-md-4', 'mb-4')
+        
+                const card = document.createElement('div')
+                card.classList.add('card', 'card-recurso')
+           
+                const cardBody = document.createElement('div')
+                cardBody.classList.add('card-body')
+        
+                const cardTitle = document.createElement('h5')
+                cardTitle.classList.add('card-title')
+                cardTitle.innerText = recurso.nome
+        
+                const cardText = document.createElement('p')
+                cardText.classList.add('card-text')
+                cardText.innerText = recurso.descricao
+
+                const cardText2 = document.createElement('p')
+                cardText2.classList.add('card-text')
+                cardText2.innerHTML = `<strong>Tipo:</strong> ${formatarTipoRecurso(recurso.tipo)}`
+        
+                const buttonGroup = document.createElement('div')
+                buttonGroup.classList.add('button-group', 'card-footer', 'd-flex', 'justify-content-around')
+                
+                const excluirButton = document.createElement('button')
+                excluirButton.classList.add('btn', 'btn-danger', 'btn-sm', 'm-1')
+                excluirButton.innerText = 'Excluir'
+                excluirButton.addEventListener('click', function() {
+                    confirmarExclusaoRecurso(recurso.id)
+                })
+                const editarButton = document.createElement('button')
+                editarButton.classList.add('btn', 'btn-primary', 'btn-sm', 'm-1')
+                editarButton.innerText = 'Editar'
+                editarButton.addEventListener('click', function() {
+                    editarRecursoNoHtml(recurso.id)
+                })
+                buttonGroup.appendChild(excluirButton)
+                buttonGroup.appendChild(editarButton)
+    
+                cardBody.appendChild(cardTitle)
+                cardBody.appendChild(cardText)
+                cardBody.appendChild(cardText2)
+                card.appendChild(cardBody)
+                card.appendChild(buttonGroup)
+                col.appendChild(card)
+                listaRecursos.appendChild(col)
+            })
+        } catch (error) {
+            console.error('Ocorreu um erro ao renderizar recursos.')
         }
     }
 
@@ -1021,6 +1026,8 @@ function initialize() {
             tabela.appendChild(thead)
     
             const tbody = document.createElement('tbody')
+            // Colocando em ordem alfabética
+            listaDeUsuarios.sort((a, b) => a.nome_usuario.localeCompare(b.nome_usuario))
             listaDeUsuarios.forEach(usuario => {
                 const linha = document.createElement('tr')
     
@@ -1139,6 +1146,8 @@ function initialize() {
             tabela.appendChild(thead)
     
             const tbody = document.createElement('tbody')
+            // Colocando em ordem alfabética
+            listaDeRecursos.sort((a, b) => a.nome.localeCompare(b.nome))
             listaDeRecursos.forEach(recurso => {
                 const linha = document.createElement('tr')
     
@@ -1270,8 +1279,8 @@ function initialize() {
                 papelUsuarioLogado = userData.papel
                 logadoEmIndustriasWayne = true
                 formLogin.reset()
-                alerta(`Login realizado com sucesso! Você está logado com perfil ${formatarPapelUsuario(papelUsuarioLogado)}.`)
-                tituloDeAcordoComLogin.innerText = `Você está logado com o perfil ${formatarPapelUsuario(papelUsuarioLogado)}.`
+                alerta(`Login realizado com sucesso! Você está logado com o seguinte papel de usuário: ${formatarPapelUsuario(papelUsuarioLogado)}.`)
+                tituloDeAcordoComLogin.innerText = `Você está logado com o seguinte papel de usuário: ${formatarPapelUsuario(papelUsuarioLogado)}.`
                 exibirSecoesComBaseNoLogin()
                 rolarPraCima()
             } else if (response.status === 401) {
