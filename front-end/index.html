@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indústrias Wayne</title>
-    <link rel="stylesheet" href="styles.css?v=1.2.4">
+    <link rel="stylesheet" href="styles.css?v=1.2.5">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
@@ -130,14 +130,47 @@
             <h2>Dashboard</h2>
             <div class="dashboard-div">
                 <h3>Registros de Acesso</h3>
+                <!-- Filtros para a tabela de regisrros de acessos -->
+                <div class="row">
+                    <div class="col">
+                        <label for="usuarioFiltroTabela">Filtrar por Usuário:</label>
+                        <select id="usuarioFiltroTabela" class="form-select">
+                            <option value="todos">Todos</option>
+                            <!-- Os usuários serão adicionados dinamicamente -->
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="papelFiltroTabela">Filtrar por Papel:</label>
+                        <select id="papelFiltroTabela" class="form-select">
+                            <option value="todos">Todos</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="funcionario">Funcionário</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="dataInicialTabela">Data Inicial:</label>
+                        <input type="date" id="dataInicialTabela" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="dataFinalTabela">Data Final:</label>
+                        <input type="date" id="dataFinalTabela" class="form-control">
+                    </div>
+                </div>
+                <button id="filtrarTabela" class="btn btn-primary mt-3">Filtrar</button>
+                <button id="resetar-filtros-tabela" class="btn btn-secondary mt-3">Remover Filtros</button>
+                <!------------------------------------------------>
                 <div class="row" id="visualizacao-registros">
                     <!-- Registros de acesso serão inseridos aqui via JavaScript -->
                 </div>
+                <!-- Botão para excluir todos os registros de acesso -->
                 <div class="col botao-e-texto" id="botao-e-texto-admin">
                     <button type="button" class="btn btn-danger btn-md m-1" id="btn-excluir-acessos">Excluir todos os acessos</button>
                     <span>Permitido somente para Administradores</span>
                 </div>
+                <!------------------------------------------------>
                 <h3>Gráfico de Registros de Acessos</h3>
+                <!-- Filtros para o gráfico de regisrros de acessos -->
                 <div class="row">
                     <div class="col">
                         <label for="usuarioFiltro">Filtrar por Usuário:</label>
@@ -166,6 +199,7 @@
                 </div>
                 <button id="filtrar" class="btn btn-primary mt-3">Filtrar</button>
                 <button id="resetar-filtros" class="btn btn-secondary mt-3">Remover Filtros</button>
+                <!------------------------------------------------>
                 <!-- Interface para mudança do tipo de gráfico -->
                 <div class="form-group">
                     <label for="tipoGrafico">Tipo de Gráfico:</label>
@@ -298,7 +332,7 @@
         </div>
     </div>
 
-    <script src="scripts.js?v=1.2.4"></script>
+    <script src="scripts.js?v=1.2.5"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>

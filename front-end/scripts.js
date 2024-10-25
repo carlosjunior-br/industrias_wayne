@@ -109,8 +109,8 @@ function initialize() {
                     carregarRecursos()
                     carregarUsuariosParaDashboard()
                     carregarRecursosParaDashboard()
+                    // Carregar dados de registros de acesso para a Dashboard
                     carregarRegistrosDeAcessoParaDashboard()
-                    // Carregar dados de registros de acesso para gráfico
                     carregarUsuariosParaFiltro()
                     carregarDadosParaGraficoRegistrosDeAcesso()
                     break
@@ -122,8 +122,8 @@ function initialize() {
                     carregarRecursos()
                     carregarUsuariosParaDashboard()
                     carregarRecursosParaDashboard()
+                    // Carregar dados de registros de acesso para a Dashboard
                     carregarRegistrosDeAcessoParaDashboard()
-                    // Carregar dados de registros de acesso para gráfico
                     carregarUsuariosParaFiltro()
                     carregarDadosParaGraficoRegistrosDeAcesso()
                     break
@@ -132,8 +132,8 @@ function initialize() {
                     dashboard.style.display = 'block'
                     carregarUsuariosParaDashboard()
                     carregarRecursosParaDashboard()
+                    // Carregar dados de registros de acesso para a Dashboard
                     carregarRegistrosDeAcessoParaDashboard()
-                    // Carregar dados de registros de acesso para gráfico
                     carregarUsuariosParaFiltro()
                     carregarDadosParaGraficoRegistrosDeAcesso()
                     break
@@ -275,6 +275,10 @@ function initialize() {
                 formUsuario.reset()
                 carregarUsuarios()
                 carregarUsuariosParaDashboard()
+                // Carregar dados de registros de acesso para a Dashboard
+                carregarRegistrosDeAcessoParaDashboard()
+                carregarUsuariosParaFiltro()
+                carregarDadosParaGraficoRegistrosDeAcesso()
             } else {
                 const errorDetail = await response.json()
                 alerta(`Erro ao cadastrar: ${JSON.stringify(errorDetail)}`, function() {
@@ -306,6 +310,10 @@ function initialize() {
                 alerta('Usuário excluído com sucesso!')
                 carregarUsuarios()
                 carregarUsuariosParaDashboard()
+                // Carregar dados de registros de acesso para a Dashboard
+                carregarRegistrosDeAcessoParaDashboard()
+                carregarUsuariosParaFiltro()
+                carregarDadosParaGraficoRegistrosDeAcesso()
             } else {
                 const errorDetail = await response.json()
                 alerta(`Erro ao excluir: ${JSON.stringify(errorDetail)}`)
@@ -316,6 +324,77 @@ function initialize() {
         }
     }
     
+    // Função para editar usuário
+    async function editarUsuarioNoHtml(id) {
+        try {
+            const response = await fetch(`${urlApi}/usuarios/${id}`)
+            const usuario = await response.json()
+            usuarioIdParaEditar = id
+            // Abrir o modal de edição
+            var modal = new bootstrap.Modal(document.getElementById('editUsuarioModal'), {
+                backdrop: 'static'
+            })
+            modal.show()
+            nomeEditadoUsuario.value = usuario.nome_usuario
+            nomeEditadoUsuario.focus()
+        } catch (error) {
+            console.error(`Ocorreu um erro ao editar usuário no html. ${error.message}`)
+        }
+    }
+    async function editarUsuario(event) {
+        event.preventDefault()
+        try {
+            // Validação de nome de usuário
+            if (!validarNomeUsuario(nomeEditadoUsuario.value)) {
+                throw new Error('O nome de usuário não pode conter espaços ou caracteres especiais.')
+            }
+            if (!validarNomeTamanho(nomeEditadoUsuario.value)) {
+                throw new Error('O nome de usuário deve ter ao menos 3 caracteres.')
+            }
+			// Verificar se o nome de usuário já existe
+            const nomeUsuarioTrim = nomeEditadoUsuario.value.trim()
+            const nomeUsuarioJaExiste = await verificarNomeUsuario(nomeUsuarioTrim)
+            if (nomeUsuarioJaExiste) {
+                throw new Error('Não foi possível editar usuário! O nome informado já existe.')
+            }
+            const usuarioAtualizado = {
+                nome_usuario: nomeEditadoUsuario.value
+            }
+            const response = await fetch(`${urlApi}/usuarios/${usuarioIdParaEditar}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(usuarioAtualizado)
+            })
+            if (response.ok) {
+                // Fechar modal da edição após edição
+                var modal = bootstrap.Modal.getInstance(document.getElementById('editUsuarioModal'))
+                if (modal) {
+                    modal.hide()
+                }
+                alerta('Usuário editado com sucesso!')
+                formEditarUsuario.reset()
+                carregarUsuarios()
+                carregarUsuariosParaDashboard()
+                // Carregar dados de registros de acesso para a Dashboard
+                carregarRegistrosDeAcessoParaDashboard()
+                carregarUsuariosParaFiltro()
+                carregarDadosParaGraficoRegistrosDeAcesso()
+            } else {
+                const errorDetail = await response.json()
+                alerta(`Erro ao editar: ${JSON.stringify(errorDetail)}`, function() {
+                    nomeEditadoUsuario.focus()
+                })
+            }
+        } catch (error) {
+            console.error('Erro ao editar usuário:', error)
+            alerta(error.message || 'Ocorreu um erro ao tentar editar o usuário. Tente novamente.', function() {
+                nomeEditadoUsuario.focus()
+            })
+        }
+    }
+
     // Função para carregar lista de usuários no html
     async function carregarUsuarios() {
         try {
@@ -379,83 +458,34 @@ function initialize() {
         }
     }
     
-    // Função para editar usuário
-    async function editarUsuarioNoHtml(id) {
-        try {
-            const response = await fetch(`${urlApi}/usuarios/${id}`)
-            const usuario = await response.json()
-            usuarioIdParaEditar = id
-            // Abrir o modal de edição
-            var modal = new bootstrap.Modal(document.getElementById('editUsuarioModal'), {
-                backdrop: 'static'
-            })
-            modal.show()
-            nomeEditadoUsuario.value = usuario.nome_usuario
-            nomeEditadoUsuario.focus()
-        } catch (error) {
-            console.error(`Ocorreu um erro ao editar usuário no html. ${error.message}`)
-        }
-    }
-    async function editarUsuario(event) {
-        event.preventDefault()
-        try {
-            // Validação de nome de usuário
-            if (!validarNomeUsuario(nomeEditadoUsuario.value)) {
-                throw new Error('O nome de usuário não pode conter espaços ou caracteres especiais.')
-            }
-            if (!validarNomeTamanho(nomeEditadoUsuario.value)) {
-                throw new Error('O nome de usuário deve ter ao menos 3 caracteres.')
-            }
-			// Verificar se o nome de usuário já existe
-            const nomeUsuarioTrim = nomeEditadoUsuario.value.trim()
-            const nomeUsuarioJaExiste = await verificarNomeUsuario(nomeUsuarioTrim)
-            if (nomeUsuarioJaExiste) {
-                throw new Error('Não foi possível editar usuário! O nome informado já existe.')
-            }
-            const usuarioAtualizado = {
-                nome_usuario: nomeEditadoUsuario.value
-            }
-            const response = await fetch(`${urlApi}/usuarios/${usuarioIdParaEditar}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(usuarioAtualizado)
-            })
-            if (response.ok) {
-                // Fechar modal da edição após edição
-                var modal = bootstrap.Modal.getInstance(document.getElementById('editUsuarioModal'))
-                if (modal) {
-                    modal.hide()
-                }
-                alerta('Usuário editado com sucesso!')
-                formEditarUsuario.reset()
-                carregarUsuarios()
-                carregarUsuariosParaDashboard()
-            } else {
-                const errorDetail = await response.json()
-                alerta(`Erro ao editar: ${JSON.stringify(errorDetail)}`, function() {
-                    nomeEditadoUsuario.focus()
-                })
-            }
-        } catch (error) {
-            console.error('Erro ao editar usuário:', error)
-            alerta(error.message || 'Ocorreu um erro ao tentar editar o usuário. Tente novamente.', function() {
-                nomeEditadoUsuario.focus()
-            })
-        }
-    }
-
-    // Função para carregar usuários para o filtro dos gráficos
+    // Função para carregar usuários para os filtros
     async function carregarUsuariosParaFiltro() {
         try {
             const response = await fetch(`${urlApi}/usuarios/`)
             const usuarios = await response.json()
+            const usuarioFiltroTabela = document.getElementById('usuarioFiltroTabela')
             const usuarioFiltro = document.getElementById('usuarioFiltro')
+            // Limpar opções anteriores
+            usuarioFiltroTabela.innerHTML = ''
+            usuarioFiltro.innerHTML = ''
+            // Adicionar a opção "Todos" como a primeira opção
+            const optionTodosTabela = document.createElement('option')
+            optionTodosTabela.value = 'todos'
+            optionTodosTabela.textContent = 'Todos'
+            optionTodosTabela.selected = true // Definir como selecionada
+            usuarioFiltroTabela.appendChild(optionTodosTabela)
+            const optionTodosGrafico = document.createElement('option')
+            optionTodosGrafico.value = 'todos'
+            optionTodosGrafico.textContent = 'Todos'
+            optionTodosGrafico.selected = true // Definir como selecionada
+            usuarioFiltro.appendChild(optionTodosGrafico)
+            // Criar opções a partir da lista de usuários
             usuarios.forEach(usuario => {
                 const option = document.createElement('option')
                 option.value = usuario.nome_usuario
                 option.textContent = usuario.nome_usuario
+                // Adicionar a opção do usuário nos filtros
+                usuarioFiltroTabela.appendChild(option.cloneNode(true))
                 usuarioFiltro.appendChild(option)
             })
         } catch (error) {
@@ -681,7 +711,28 @@ function initialize() {
     }
 
     // Funções para carregar o Dashboard
-    
+
+    // Função para aplicar os filtros na tabela
+    function aplicarFiltrosNaTabela(listaDeRegistros) {
+        const usuarioFiltro = document.getElementById('usuarioFiltroTabela').value
+        const papelFiltro = document.getElementById('papelFiltroTabela').value
+        const dataInicial = document.getElementById('dataInicialTabela').value
+        const dataFinal = document.getElementById('dataFinalTabela').value
+        return listaDeRegistros.filter(registro => {
+            const dataRegistro = new Date(registro.data_hora_acesso)
+            const dataInicialValida = dataInicial ? new Date(dataInicial + 'T00:00:00') : null
+            const dataFinalValida = dataFinal ? new Date(dataFinal + 'T23:59:59') : null
+            const usuarioValido = usuarioFiltro === 'todos' || registro.nome_usuario === usuarioFiltro
+            const papelValido = papelFiltro === 'todos' || registro.papel === papelFiltro
+            return (
+                usuarioValido &&
+                papelValido &&
+                (!dataInicialValida || dataRegistro >= dataInicialValida) &&
+                (!dataFinalValida || dataRegistro <= dataFinalValida)
+            )
+        })
+    }
+
     // Função para carregar lista de registros de acesso para Dashboard
     async function carregarRegistrosDeAcessoParaDashboard() {
         try {
@@ -693,38 +744,11 @@ function initialize() {
         }
     }
 
-    // Funções para excluir registros de acesso
-    function confirmarExclusaoRegistrosDeAcesso() {
-        excluirRegistrosAcesso = true
-        var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'), {
-            backdrop: 'static'
-        })
-        modal.show()
-    }
-    async function excluirRegistrosDeAcesso() {
-        try {
-            const response = await fetch(`${urlApi}/registros_acesso/`, {
-                method: 'DELETE',
-            })
-            if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.detail || 'Erro ao excluir registros de acesso.')
-            }
-            alerta('Todos os registros de acesso foram excluídos com sucesso.')
-            carregarRegistrosDeAcessoParaDashboard()
-            // Carregar dados de registros de acesso para gráfico
-            carregarUsuariosParaFiltro()
-            carregarDadosParaGraficoRegistrosDeAcesso()
-        } catch (error) {
-            console.error('Ocorreu um erro ao excluir registros de acesso:', error.message)
-            alerta(error.message)
-        }
-    }
-
     // Função para listar registros de acesso no Dashboard
     function carregarRegistrosDeAcessoNoDashboard(listaDeRegistros) {
         try {
             visualizacaoRegistros.innerHTML = ''
+            const registrosFiltrados = aplicarFiltrosNaTabela(listaDeRegistros) // Filtro aplicado aqui
     
             const tabela = document.createElement('table')
             tabela.id = 'tabelaRegistros'
@@ -741,7 +765,7 @@ function initialize() {
             tabela.appendChild(thead)
     
             const tbody = document.createElement('tbody')
-            listaDeRegistros.forEach(registro => {
+            registrosFiltrados.forEach(registro => {
                 const linha = document.createElement('tr')
     
                 const colunaUsuario = document.createElement('td')
@@ -836,9 +860,9 @@ function initialize() {
                     (!dataInicialValida || dataRegistro >= dataInicialValida) &&
                     (!dataFinalValida || dataRegistro <= dataFinalValida)
                 )
-            })    
-            const tipoGrafico = document.getElementById('tipoGrafico').value; // Obter o valor do seletor
-            const totalAcessos = registrosFiltrados.length; // Total geral de acessos
+            })
+            const tipoGrafico = document.getElementById('tipoGrafico').value // Obter o valor do seletor
+            const totalAcessos = registrosFiltrados.length // Total geral de acessos
             if (tipoGrafico === 'mensal') {
                 // Agrupar por mês
                 const registrosMensais = {}
@@ -919,7 +943,7 @@ function initialize() {
                 const usuariosText = contagemUsuarios > maxUsuariosExibir 
                     ? `${contagemUsuarios} usuário(s) único(s) (exibindo apenas ${maxUsuariosExibir})<br>${usuariosUnicos.slice(0, maxUsuariosExibir).join('<br>')}<br>... e mais ${contagemUsuarios - maxUsuariosExibir} usuário(s)`
                     : `${contagemUsuarios} usuário(s) único(s): ${usuariosUnicos.join('<br>')}`
-                return `Acessos: ${counts[index]}<br>${usuariosText}`; // A linha original permanece a mesma
+                return `Acessos: ${counts[index]}<br>${usuariosText}` // A linha original permanece a mesma
             })
         }
         Plotly.newPlot('graficoAcessos', [trace], layout).then(() => {
@@ -937,6 +961,34 @@ function initialize() {
                 })
             }
         })
+    }
+
+    // Funções para excluir registros de acesso
+    function confirmarExclusaoRegistrosDeAcesso() {
+        excluirRegistrosAcesso = true
+        var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'), {
+            backdrop: 'static'
+        })
+        modal.show()
+    }
+    async function excluirRegistrosDeAcesso() {
+        try {
+            const response = await fetch(`${urlApi}/registros_acesso/`, {
+                method: 'DELETE',
+            })
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.detail || 'Erro ao excluir registros de acesso.')
+            }
+            alerta('Todos os registros de acesso foram excluídos com sucesso.')
+            // Carregar dados de registros de acesso para a Dashboard
+            carregarRegistrosDeAcessoParaDashboard()
+            carregarUsuariosParaFiltro()
+            carregarDadosParaGraficoRegistrosDeAcesso()
+        } catch (error) {
+            console.error('Ocorreu um erro ao excluir registros de acesso:', error.message)
+            alerta(error.message)
+        }
     }
 
     // Função para carregar lista de usuários para Dashboard
@@ -1349,6 +1401,19 @@ function initialize() {
             })
         })
         
+        // Escutadores para configurar os filtros da tabela de registro de acessos
+        document.getElementById('filtrarTabela').addEventListener('click', () => {
+            carregarRegistrosDeAcessoParaDashboard()
+        })
+        // Remover os filtros da tabela de registros de acessos
+        document.getElementById('resetar-filtros-tabela').addEventListener('click', () => {
+            document.getElementById('usuarioFiltroTabela').value = 'todos'
+            document.getElementById('papelFiltroTabela').value = 'todos'
+            document.getElementById('dataInicialTabela').value = ''
+            document.getElementById('dataFinalTabela').value = ''
+            carregarRegistrosDeAcessoParaDashboard()
+        })
+
         // Escutadores para configurar os filtros do gráfico de registro de acessos
         document.getElementById('filtrar').addEventListener('click', () => {
             const usuarioFiltro = document.getElementById('usuarioFiltro').value
